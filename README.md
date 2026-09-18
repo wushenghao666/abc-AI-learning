@@ -55,6 +55,8 @@ git push
 
 推送后，`.github/workflows/deploy.yml` 会自动扫描 `posts/`、生成 `posts.json` 并部署。打开仓库的 **Actions** 可以查看部署进度，首次部署完成后 GitHub Pages 会显示网站地址。
 
+如果 Actions 在 **Configure Pages** 这一步报 `Get Pages site failed` 或 `Not Found`，请回到仓库的 **Settings → Pages**，在 **Build and deployment → Source** 中选择 **GitHub Actions** 并保存，然后在 **Actions** 页面重新运行失败的工作流。这个报错发生在 GitHub Pages 设置阶段，不是文章或构建脚本的问题。
+
 ## 文件作用
 
 - `index.html`：页面结构与站点文案。

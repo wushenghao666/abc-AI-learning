@@ -1,5 +1,17 @@
 [
   {
+    "title": "我的 8 周 AI 学习计划",
+    "date": "2026-09-19",
+    "tags": [
+      "学习路线",
+      "深度学习",
+      "Agent"
+    ],
+    "excerpt": "先用四周做出一个能用的深度学习模型，再用四周学习大模型与 Agent 开发。",
+    "slug": "2026-09-19-eight-week-plan",
+    "file": "posts/2026-09-19-eight-week-plan.md"
+  },
+  {
     "title": "这个 AI 学习博客是怎么搭起来的",
     "date": "2026-09-18",
     "tags": [
