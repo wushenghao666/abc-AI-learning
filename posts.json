@@ -1,5 +1,17 @@
 [
   {
+    "title": "第一周：用 PyTorch 完成 Fashion-MNIST 图像分类",
+    "date": "2026-09-20",
+    "tags": [
+      "深度学习",
+      "PyTorch",
+      "Fashion-MNIST"
+    ],
+    "excerpt": "从一张 28×28 的灰度服饰图片开始，使用 PyTorch 跑通数据加载、模型训练、验证和测试。",
+    "slug": "2026-09-20-fashion-mnist",
+    "file": "posts/2026-09-20-fashion-mnist.md"
+  },
+  {
     "title": "我的 8 周 AI 学习计划",
     "date": "2026-09-19",
     "tags": [
@@ -21,17 +33,5 @@
     "excerpt": "先把记录学习这件事做简单：写 Markdown，推到 GitHub，网站自动更新。",
     "slug": "2026-09-18-site-birth",
     "file": "posts/2026-09-18-site-birth.md"
-  },
-  {
-    "title": "第一周：用 PyTorch 完成 Fashion-MNIST 图像分类",
-    "date": "2026-09-18",
-    "tags": [
-      "深度学习",
-      "PyTorch",
-      "Fashion-MNIST"
-    ],
-    "excerpt": "从一张 28×28 的灰度服饰图片开始，使用 PyTorch 跑通数据加载、模型训练、验证和测试。",
-    "slug": "2026-09-18-fashion-mnist",
-    "file": "posts/2026-09-18-fashion-mnist.md"
   }
 ]

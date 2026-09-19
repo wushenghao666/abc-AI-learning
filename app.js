@@ -16,6 +16,7 @@ function renderInline(value) {
     .replace(/`([^`]+)`/g, '<code>$1</code>')
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    .replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g, '<img src="$2" alt="$1" loading="lazy">')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
 }
 
@@ -34,7 +35,8 @@ function renderMarkdown(markdown) {
     if (listType) { html.push(`</${listType}>`); listType = ''; }
   };
 
-  for (const line of lines) {
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
     const fence = line.match(/^```(.*)$/);
     if (fence) {
       flushParagraph(); closeList();
@@ -52,6 +54,22 @@ function renderMarkdown(markdown) {
     if (heading) { flushParagraph(); closeList(); const level = heading[1].length; html.push(`<h${level}>${renderInline(heading[2])}</h${level}>`); continue; }
     const quote = line.match(/^>\s?(.*)$/);
     if (quote) { flushParagraph(); closeList(); html.push(`<blockquote><p>${renderInline(quote[1])}</p></blockquote>`); continue; }
+    const nextLine = lines[index + 1] || '';
+    const isTable = line.includes('|') && /^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?$/.test(nextLine.trim());
+    if (isTable) {
+      flushParagraph(); closeList();
+      const cells = (row) => row.trim().replace(/^\||\|$/g, '').split('|').map((cell) => renderInline(cell.trim()));
+      const headers = cells(line);
+      html.push(`<div class="table-wrap"><table><thead><tr>${headers.map((cell) => `<th>${cell}</th>`).join('')}</tr></thead><tbody>`);
+      index += 2;
+      while (index < lines.length && lines[index].includes('|') && lines[index].trim()) {
+        html.push(`<tr>${cells(lines[index]).map((cell) => `<td>${cell}</td>`).join('')}</tr>`);
+        index += 1;
+      }
+      html.push('</tbody></table></div>');
+      index -= 1;
+      continue;
+    }
     const unordered = line.match(/^[-*]\s+(.+)$/);
     const ordered = line.match(/^\d+\.\s+(.+)$/);
     if (unordered || ordered) {
@@ -123,6 +141,7 @@ async function openPost(slug, updateHash = true) {
     const markdown = stripFrontMatter(await response.text());
     content.innerHTML = `<div class="article-meta"><span>${escapeHtml(post.date)}</span><span>${post.tags.map(escapeHtml).join(' / ')}</span></div>${renderMarkdown(markdown)}`;
     content.querySelector('h1')?.setAttribute('id', 'postTitle');
+    document.body.classList.add('reading-open');
     dialog.showModal(); dialog.scrollTop = 0; updateReadingProgress();
     if (updateHash) history.pushState({ post: slug }, '', `#post=${encodeURIComponent(slug)}`);
   } catch (error) {
@@ -133,6 +152,7 @@ async function openPost(slug, updateHash = true) {
 
 function closePost(updateHash = true) {
   if (dialog.open) dialog.close();
+  document.body.classList.remove('reading-open');
   if (updateHash && location.hash.startsWith('#post=')) history.pushState({}, '', '#archive');
 }
 function updateReadingProgress() {
@@ -160,7 +180,10 @@ async function init() {
 searchInput.addEventListener('input', () => { state.query = searchInput.value; renderPosts(); });
 document.querySelector('#dialogClose').addEventListener('click', () => closePost());
 dialog.addEventListener('click', (event) => { if (event.target === dialog) closePost(); });
-dialog.addEventListener('close', () => { if (location.hash.startsWith('#post=')) history.replaceState({}, '', '#archive'); });
+dialog.addEventListener('close', () => {
+  document.body.classList.remove('reading-open');
+  if (location.hash.startsWith('#post=')) history.replaceState({}, '', '#archive');
+});
 dialog.addEventListener('scroll', updateReadingProgress, { passive: true });
 window.addEventListener('popstate', () => {
   const slug = location.hash.startsWith('#post=') ? decodeURIComponent(location.hash.slice(6)) : '';

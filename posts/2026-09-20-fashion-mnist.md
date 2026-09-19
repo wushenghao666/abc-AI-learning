@@ -1,6 +1,6 @@
 ---
 title: "第一周：用 PyTorch 完成 Fashion-MNIST 图像分类"
-date: "2026-09-18"
+date: "2026-09-20"
 tags: [深度学习, PyTorch, Fashion-MNIST]
 excerpt: "从一张 28×28 的灰度服饰图片开始，使用 PyTorch 跑通数据加载、模型训练、验证和测试。"
 ---
@@ -17,7 +17,7 @@ Fashion-MNIST 是一个服饰图片分类数据集。每张图片是 **28×28 �
 
 下面每个类别各展示一张样例。坐标轴上的 0、14、27 对应 28 个像素位置。这些图片是灰度图，模型输入是一组灰度数字。
 
-![Fashion-MNIST 每类样例](../assets/fashion-mnist/fashion_mnist_samples.png)
+![Fashion-MNIST 每类样例](assets/week1/fashion_mnist_samples.png)
 
 数据一共有 10 类，标签编号如下：
 
@@ -133,15 +133,15 @@ test_accuracy = 0.8825（88.25%）
 
 下面的曲线比单独看一个准确率更直观：训练和验证 loss 总体下降，准确率总体上升。第 5、6 个 epoch 的验证准确率有短暂波动，但后面继续提升，说明增加训练轮数对这次实验有帮助。
 
-![训练曲线](../assets/fashion-mnist/training_curves.png)
+![训练曲线](assets/week1/training_curves.png)
 
 ## 看几个具体预测
 
 代码从测试集保存了前几张预测正确和预测错误的图片。每张图的标题同时给出真实类别和预测类别；绿色标题表示相同，红色标题表示不同。
 
-![预测正确的测试样例](../assets/fashion-mnist/correct.png)
+![预测正确的测试样例](assets/week1/correct.png)
 
-![预测错误的测试样例](../assets/fashion-mnist/incorrect.png)
+![预测错误的测试样例](assets/week1/incorrect.png)
 
 错误样例比准确率更能说明问题：服饰图片很小、是灰度图，而且 `Shirt`、`T-shirt/top`、`Pullover` 和 `Coat` 的轮廓可能相似。MLP 只看到展平后的像素，容易把这些类别混淆；这也是 CNN 可能带来帮助的地方。
 
