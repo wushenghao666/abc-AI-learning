@@ -1,5 +1,18 @@
 [
   {
+    "title": "第二周：用 CNN、数据增强和混淆矩阵改进图像分类",
+    "date": "2026-09-27",
+    "tags": [
+      "深度学习",
+      "PyTorch",
+      "CNN",
+      "数据增强"
+    ],
+    "excerpt": "在第一周的 Fashion-MNIST 基线上做三组可控实验，观察卷积结构、数据增强和按类别评估分别带来了什么。",
+    "slug": "2026-09-27-cnn-augmentation",
+    "file": "posts/2026-09-27-cnn-augmentation.md"
+  },
+  {
     "title": "第一周：用 PyTorch 完成 Fashion-MNIST 图像分类",
     "date": "2026-09-20",
     "tags": [

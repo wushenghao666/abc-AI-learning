@@ -1,8 +1,8 @@
 ---
-title: "这个 AI 学习博客是怎么搭起来的"
-date: "2026-09-18"
+title: 这个 AI 学习博客是怎么搭起来的
+date: 2026-09-18
 tags: [网站, 学习记录]
-excerpt: "先把记录学习这件事做简单：写 Markdown，推到 GitHub，网站自动更新。"
+excerpt: 先把记录学习这件事做简单：写 Markdown，推到 GitHub，网站自动更新。
 ---
 
 # 这个 AI 学习博客是怎么搭起来的
@@ -27,3 +27,4 @@ excerpt: "先把记录学习这件事做简单：写 Markdown，推到 GitHub，
 ```text
 write → build → push → repeat
 ```
+
