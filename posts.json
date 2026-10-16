@@ -1,5 +1,19 @@
 [
   {
+    "title": "第五周：把学习 Agent 做成可视化 Web 应用",
+    "date": "2026-10-18",
+    "tags": [
+      "Agent",
+      "Python",
+      "Web",
+      "可视化",
+      "大模型"
+    ],
+    "excerpt": "延续第四周的持久化 Agent，完成 Web 控制台、规划与工具轨迹可视化、真实模型接入和前后端部署，并用四类目标检查完整流程。",
+    "slug": "2026-10-18-agent-dashboard",
+    "file": "posts/2026-10-18-agent-dashboard.md"
+  },
+  {
     "title": "第四周：让学习 Agent 记住进度并继续执行",
     "date": "2026-10-11",
     "tags": [
