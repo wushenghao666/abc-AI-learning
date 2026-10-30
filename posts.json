@@ -1,17 +1,18 @@
 [
   {
-    "title": "第六周：用自己的学习资料做一个有依据的问答程序",
-    "date": "2026-10-25",
+    "title": "第六、七周：从本地 RAG 到 AI 应用开发",
+    "date": "2026-10-31",
     "tags": [
       "RAG",
+      "Agent",
+      "LangChain",
       "Python",
-      "向量检索",
       "大模型",
-      "评估"
+      "学习总结"
     ],
-    "excerpt": "把前五周的博客和 README 整理成本地资料库，比较关键词与向量检索，用 24 个固定问题检查回答、引用和资料不足时的处理。",
-    "slug": "2026-10-25-personal-rag",
-    "file": "posts/2026-10-25-personal-rag.md"
+    "excerpt": "两周完成个人学习资料问答项目，同时补充 RAG、上下文工程、采样参数、Token、Agent Skill、CLI、代码审核、Codex 和 LangChain 的系统学习。",
+    "slug": "2026-10-31-week6-week7-rag-langchain",
+    "file": "posts/2026-10-31-week6-week7-rag-langchain.md"
   },
   {
     "title": "第五周：把学习 Agent 做成可视化 Web 应用",
