@@ -1,6 +1,6 @@
 [
   {
-    "title": "第六、七周补记：读懂最小 RAG 的每一段代码",
+    "title": "第六、七周：读懂最小 RAG 的每一段代码",
     "date": "2026-11-01",
     "tags": [
       "RAG",
@@ -9,24 +9,9 @@
       "代码审查",
       "学习总结"
     ],
-    "excerpt": "补上 RAG 工作机制与 LangChain 前 27 集两条学习线索，再按模块把最小链路读一遍：105 个片段的索引、关键词重合排序、编号引用、Pages 与 Render 部署，以及简化后暴露出的三个问题。",
+    "excerpt": "把 RAG 工作机制和 LangChain 前 27 集两条学习线索对到代码上，再按模块把最小链路读一遍：105 个片段的索引、关键词重合排序、编号引用、Pages 与 Render 部署，以及简化后暴露出的三个问题。",
     "slug": "2026-11-01-week6-week7-rag-code-reading",
     "file": "posts/2026-11-01-week6-week7-rag-code-reading.md"
-  },
-  {
-    "title": "第六、七周：从本地 RAG 到 AI 应用开发",
-    "date": "2026-10-31",
-    "tags": [
-      "RAG",
-      "Agent",
-      "LangChain",
-      "Python",
-      "大模型",
-      "学习总结"
-    ],
-    "excerpt": "两周完成个人学习资料问答项目，同时补充 RAG、上下文工程、采样参数、Token、Agent Skill、CLI、代码审核、Codex 和 LangChain 的系统学习。",
-    "slug": "2026-10-31-week6-week7-rag-langchain",
-    "file": "posts/2026-10-31-week6-week7-rag-langchain.md"
   },
   {
     "title": "第五周：把学习 Agent 做成可视化 Web 应用",
