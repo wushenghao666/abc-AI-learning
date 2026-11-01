@@ -2,7 +2,7 @@
 title: 第六、七周：读懂最小 RAG 的每一段代码
 date: 2026-11-01
 tags: [RAG, LangChain, Python, 代码审查, 学习总结]
-excerpt: 把马克的技术工作坊的 AI 视频和 LangChain 前 27 集过一遍，再按模块把最小链路读一遍：105 个片段的索引、关键词重合排序、编号引用、Pages 与 Render 部署，以及简化后暴露出的三个问题。
+excerpt: 本周学习了马克的技术工作坊的 AI 视频和 LangChain 前 27 集，并且实现了一个最小 RAG 项目：以前五周的博客和 README 为资料库，回答关于学习记录的问题。
 ---
 
 第六周和第七周共同完成一个个人学习资料问答项目：把前五周的博客和 README 做成能检索的资料库，接一个兼容 Chat Completions 的模型，再发布到 GitHub Pages 和 Render。
