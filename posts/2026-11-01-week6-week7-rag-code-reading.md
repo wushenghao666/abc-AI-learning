@@ -5,117 +5,42 @@ tags: [RAG, LangChain, Python, 代码审查, 学习总结]
 excerpt: 把马克的技术工作坊的 AI 视频和 LangChain 前 27 集过一遍，再按模块把最小链路读一遍：105 个片段的索引、关键词重合排序、编号引用、Pages 与 Render 部署，以及简化后暴露出的三个问题。
 ---
 
-第六周和第七周共同完成一个个人学习资料问答项目：把前五周的博客和 README 做成能检索的资料库，接一个兼容 Chat Completions 的模型，再发布到 GitHub Pages 和 Render。收尾阶段我没有继续加功能，而是先把这周的视频和课程过一遍，再把 week 6 目录里的代码从头读一遍：哪些函数现在真的在跑，哪些已经没人调用，简化的时候又丢掉了什么。
-
-读下来发现三个具体问题。问“第四周怎样实现会话恢复”，检索结果的第一名是第五周博客；34 项自动测试因为一个已经不存在的函数名，直接导入失败，一项都没执行；README 里写的部署工作流和接口，也和现在的代码对不上。下面先写学习，再写项目，最后写这三个问题。
+第六周和第七周共同完成一个个人学习资料问答项目：把前五周的博客和 README 做成能检索的资料库，接一个兼容 Chat Completions 的模型，再发布到 GitHub Pages 和 Render。
 
 ## 学习部分
 
-### 知识库问答：从检索到上下文
+### 理论学习
 
-[马克的技术工作坊](https://space.bilibili.com/1815948385)的这组视频从 RAG 讲到上下文工程。[RAG 工作机制详解](https://www.bilibili.com/video/BV1JLN2z4EZQ)把知识库问答拆成一条完整链路：原始资料先解析、切分，再生成向量并建立索引；用户提问后，系统按关键词或语义相似度取回若干片段，组织成上下文，最后交给生成模型。RAG 的价值在于资料可以更新、核对和引用，模型本身不必因为资料变化而重新训练。
+第六周，我主要学习了[马克的技术工作坊](https://space.bilibili.com/1815948385)的视频。包括：
 
-[Context Engineering](https://www.bilibili.com/video/BV11zbPzVEUe/)接着说明，找到片段只是一半，另一半是决定哪些内容进入上下文、怎样排列、附加什么说明、保留哪些来源信息。上下文太少会漏掉条件，太多又会把无关内容和互相冲突的说明一起交给模型。
+- [从 LLM 到 Agent Skill，一期视频带你打通底层逻辑！](https://www.bilibili.com/video/BV1E7wtzaEdq/?spm_id_from=333.1387.homepage.video_card.click)
+- [Token 到底是什么？—— 揭秘大模型背后的“文字压缩术”](https://www.bilibili.com/video/BV1S5miBvEsu/?spm_id_from=333.1387.upload.video_card.click)
+- [Temperature & Top-p：掌控大模型的创造力开关](https://www.bilibili.com/video/BV1taSFBNEG4/?spm_id_from=333.1387.upload.video_card.click)
+- [RAG 工作机制详解——一个高质量知识库背后的技术全流程](https://www.bilibili.com/video/BV1JLN2z4EZQ)
+- [Context Engineering：概念与技术实现深度解析](https://www.bilibili.com/video/BV11zbPzVEUe/?spm_id_from=333.1387.upload.video_card.click)
+- [Agent Skill 从使用到原理，一次讲清](https://www.bilibili.com/video/BV1cGigBQE6n/?spm_id_from=333.1387.upload.video_card.click)
+- [为什么越来越多的人抛弃 MCP，转向 CLI？](https://www.bilibili.com/video/BV16zDfBtECQ/?spm_id_from=333.1387.upload.video_card.click)
+- [如何审核 AI 写的代码？从写代码到上线，一套保证产品质量的全流程](https://www.bilibili.com/video/BV1PznU6YEZE/?spm_id_from=333.1387.upload.video_card.click)
 
-### 生成参数与 Token
+### 实践-LangChain
 
-[Temperature & Top-p](https://www.bilibili.com/video/BV1taSFBNEG4)讲采样。这两个参数都作用在生成阶段：温度较低时，模型更倾向概率较高的下一个词，结构化输出更稳定；温度较高时，表达更发散。top-p 则从累计概率达到阈值的候选集合里采样。视频也提醒，采样参数只改变生成方式，不能修复检索阶段的错误。
+LangChain 是一个开源的 **AI 智能体（Agent）开发框架**，主要用于简化基于大语言模型（LLM）的应用程序构建。它通过提供标准化的接口和工具，帮助开发者将模型、外部数据源和计算逻辑连接起来，从而构建更复杂的智能应用。我学习了[黑马程序员 2026 最新版 LangChain](https://www.bilibili.com/video/BV178w1z7EHQ)的前 27 集，这有助于我快速构建agent。
 
-[Token 到底是什么](https://www.bilibili.com/video/BV1S5miBvEsu)解释了模型实际处理的是按分词规则拆开的文本单元。中文、英文、数字、标点和代码对应的 Token 数并不相同，上下文长度、输出上限和接口用量都以 Token 为单位，所以字符数不能直接当作 Token 数。
+# RAG项目部分
 
-### Agent、Skill 与工具连接
+### 项目实现
 
-[从 LLM 到 Agent Skill](https://www.bilibili.com/video/BV1E7wtzaEdq)把 Agent 和普通问答区分开：模型负责理解目标、选择下一步、组织结果，工具负责提供确定的能力，状态负责保存过程。Skill 可以看作围绕某类任务整理好的知识、约束和操作流程，重点是让模型能稳定复用同一套做事方法。
+当前部署的问答页是一条用 Python 标准库就能跑通的短链：`src/web.py` 收到请求后调用 `simple_rag.py` 里的函数完成检索，必要时再请求模型。一条请求可以拆成下面几段：
 
-[Agent Skill 从使用到原理](https://www.bilibili.com/video/BV1cGigBQE6n)更具体一些，从怎么写、怎么用讲到背后机制：Skill 由一份简短说明和可加载的参考资料组成，模型先看到说明，需要时再读取详细内容，而不是一次把所有材料都塞进上下文。
+- **资料与切分**：`build_index()` 读取 `data/raw/` 下 `week*-*.md` 的十份快照，也就是前五周的 5 篇博客和 5 份 README。`split_markdown()` 先按 Markdown 标题把文章拆成章节，再把每章按 700 字符窗口切开，一共生成 105 个片段。当前切分不重叠，也没有跳过 front matter，`title`、`date`、`tags`、`excerpt` 这些元数据会被当成正文一起切进片段，这是下一步要修的地方。
 
-[为什么越来越多的人抛弃 MCP，转向 CLI](https://www.bilibili.com/video/BV16zDfBtECQ/)讲工具连接的两种方式。MCP 用统一协议把工具和数据源暴露给模型，接入面更宽；CLI 直接、容易调试，也方便在终端里复现同一条命令。两者没有脱离任务场景的绝对优劣。
+- **检索**：`words()` 先把文本统一成小写，拆成英文、数字、下划线组成的词，再把中文按连续双字切开；`retrieve()` 用问题和片段之间词集合的重合数量打分，按分数排序取前 k 段，默认 4 段、上限 8 段。命中的每段会带上编号、来源文件和章节，作为后面引用的依据。
 
-### 审核 AI 写的代码
+- **组织上下文与生成**：`prompt()` 把命中的片段拼成 `[1]`、`[2]` 这样带编号的资料块，并在开头写入“只依据资料回答、资料不足就明说、把事实和建议分开”的约束。`answer()` 读取 `.env` 里的 `OPENAI_API_KEY` 等配置，向兼容 Chat Completions 的接口发请求，temperature 固定为 0，默认模型是 GLM-4.5-Flash。没有配置密钥、或者页面勾选了“只检索”，就跳过这一步，直接返回检索片段，不会伪造回答。
 
-[如何审核 AI 写的代码](https://www.bilibili.com/video/BV1PznU6YEZE)把「生成」和「交付」分开看：需求是否覆盖、边界条件是否处理、错误是否可观察、测试是否真的验证了行为，还要确认密钥、权限和依赖没有被误放进项目。视频从写代码一直讲到上线，重点不在模型写得多快，而在这些检查能不能通过。
+- **网页与服务**：`src/web.py` 用标准库的 `ThreadingHTTPServer` 提供两个接口——`GET /api/health` 返回当前片段数，`POST /api/ask` 接收问题、片段数和是否只检索。前端 `web/index.html` 和 `web/app.js` 把这三个选项提交给后端，再把状态、回答和检索片段显示出来；`web/examples.json` 提供六个示例问题，每个都带着预期结果。服务启动时 `build_index()` 会重建索引，所以免费实例重启后不需要手动建索引。
 
-### LangChain 前 27 集
-
-[黑马程序员 2026 最新版 LangChain](https://www.bilibili.com/video/BV178w1z7EHQ)的前 27 集大致分四层推进：
-
-- 模型调用与提示模板：把固定指令、用户输入和变量拆开，用统一模板生成请求；
-- 输出解析与链式调用：上一步的结果成为下一步的输入，每个环节都有明确的输入输出；
-- 文档加载、切分与检索：加载器读文档，切分器分段，向量化之后交给 Retriever 取回相关内容；
-- 工具与 Agent：工具需要名称、参数和返回值，Agent 再根据目标决定是否调用。
-
-课程里也提到框架的取舍：框架能减少重复代码，快速接上模型、提示、解析器、Retriever 和 Agent；最小实现则更容易看清状态、错误和引用怎样传递。两种方式各自适合不同阶段，先写过一遍再换抽象，出错时更容易判断问题出在哪一层。
-
-## 项目部分
-
-### 现在的结构：两条路径
-
-项目里其实有两套实现。一套是能读完的最小链路，一套是上一版的完整实验平台。当前入口是前者，后者留在仓库里当实验记录：
-
-| 模块 | 职责 | 现在谁在用 |
-| --- | --- | --- |
-| `src/simple_rag.py` | 读取、切分、检索、提示、模型调用 | `cli.py`、`web.py`，约 150 行 |
-| `src/web.py` + `web/` | HTTP 服务、页面与示例 | 本地和线上入口 |
-| `src/corpus.py`、`embeddings.py`、`retrieval.py` | 白名单导入、BGE 向量、BM25 与 RRF 组合 | 只有评估与审计脚本 |
-| `src/generation.py`、`service.py` | 编号原文单元、引用校验、过程事件 | 只有评估与审计脚本 |
-| `evaluation/`、`reports/`、`tests/` | 24 道固定题、实验记录、自动测试 | 评估与回归 |
-
-简版的好处是能一口气读完：150 行，十个函数，没有向量、没有依赖注入，也没有流式接口。代价是上一版为了“可核对”加的东西基本都没了。
-
-### 最小链路具体在做什么
-
-一次请求走四步：按 `week*-*.md` 读取十份快照，按 Markdown 标题和 700 字符窗口切段；把问题和片段都拆成英文数字词加中文双字词，按词集合重合数量排序取前 k 段；把命中的片段编成 `[1]`、`[2]` 这样的上下文；最后要么只返回片段，要么把问题和上下文发给模型。默认勾选“只检索”，取消勾选才会真正请求模型；没有配置密钥时直接返回 `retrieval_only`，不会伪造回答。
-
-和上一版放在一起，差异就很清楚：
-
-| 环节 | 当前最小链路 | 上一版完整链路 |
-| --- | --- | --- |
-| 切分 | 700 字符，不重叠 | 480 字符，重叠 80，优先段落与句末 |
-| 片段数 | 105 | 112 |
-| 检索 | 关键词重合计数 | BM25、BGE 向量、RRF 组合三选一 |
-| 引用 | `[n]` 加文件与章节 | source/span 编号，取回未经改写的原文 |
-| 校验 | 无 | 结构、编号、逐字匹配三道 |
-| 测试 | 34 项，当前导入失败 | 34 项，曾记录为全部通过 |
-
-片段数从 112 降到 105，不是因为资料变少，而是窗口变大、不再重叠。这也解释了为什么后面检索会变糙：同样的内容被切成更少的、更长的段，一段里混进了更多主题。
-
-### 问题一：检索把第五周排在第四周前面
-
-用页面上第一个示例提问：
-
-```text
-问题：第四周怎样实现会话恢复？
-第一名：week5-blog.md ｜ 章节「资料」｜ 重合分数 5
-```
-
-第一名不是第四周博客，而是第五周博客开头的一段。原因有两层。第一，`split_markdown()` 只跳过 `---` 这一行，没有跳过 front matter 本身，所以 `title:`、`date:`、`tags:`、`excerpt:` 都被当成正文切进片段，章节名还统一叫“资料”。第二，第五周的 excerpt 里写着“延续第四周的持久化 Agent”，其中“第四周”正好命中问题，于是这条元数据靠一次词面重合排到了真正的实现说明前面。
-
-上一版没有这个问题：`sections()` 从 front matter 之后开始切，`indexed_text()` 还会把“第 N 周 标题”拼进参与检索的文本，周次因此不是噪音而是信号。
-
-修改方向不难，但要重测：切分时跳过 front matter；把周次和标题拼回索引文本；如果还想更稳，可以给元数据字段降权。这三步都会改变排序，需要重跑同一组 24 题才能说清楚是变好还是变坏。
-
-### 问题二：34 项测试一项都没跑起来
-
-```powershell
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
-# ImportError: cannot import name 'handler_for' from 'src.web'
-```
-
-`tests/test_rag.py` 测的是上一版的 HTTP 层：流式过程事件、跨域拒绝、路径穿越、请求体上限，这些都以 `src.web.handler_for()` 返回的处理器为入口。简化时 `web.py` 被整个换掉，不再提供这个函数，测试文件在导入阶段就失败，34 个用例一个都不会执行。
-
-也就是说，这次能看出来的只有“测试跑不起来”，而不是“功能正确”。上一版记录里的 34 项全绿，对现在的入口没有任何保护作用。`scripts/evaluate.py` 和 `scripts/audit_delivery.py` 还挂在 `service`、`retrieval` 上，能跑，但测的是老链路，不是线上这一条。
-
-修法有两条，选一条即可：给简版补一个能构造处理器的工厂函数，让老测试至少在接口形状上继续有效；或者把 HTTP 测试改成直接启动简版服务，只保留 `/api/ask`、`/api/health`、同源和长度边界这些当前真正存在的行为。纯检索、引用、超时、密钥脱敏这些用例和 HTTP 层无关，可以留着。
-
-### 问题三：README 和代码对不上
-
-- README 写着“本仓库没有部署工作流，也没有远程发布”，实际仓库里既有 `render.yaml`，也有 `.github/workflows/pages.yml`；
-- README 描述了 `/api/ask/stream` 的 NDJSON 过程流和白盒面板，现在的 `web.py` 只有 `/api/ask` 和 `/api/health`；
-- README 的 CLI 示例是 `--method vector`、`--retrieve-only`，现在的 `cli.py` 只有 `--answer`。
-
-这类不一致比代码 bug 更费时间，因为照着文档操作会先怀疑环境，再怀疑密钥，最后才发现接口早就不在了。文档和入口一起改，比事后补要省事。
-
-### 部署这一层
+### 项目部署
 
 前端和后端是分开的，链路很短：
 
