@@ -1,5 +1,19 @@
 [
   {
+    "title": "第八周：让 Agent 学会使用工具——LangChain 与 MCP",
+    "date": "2026-11-08",
+    "tags": [
+      "MCP",
+      "LangChain",
+      "Agent",
+      "Python",
+      "学习总结"
+    ],
+    "excerpt": "为了真正理解 MCP，我把前几周完成的笔记检索和学习规划包装成 MCP 工具，再用 LangChain Agent 调用它们，完整走了一遍工具提供、连接和调用的过程。",
+    "slug": "2026-11-08-week8-langchain-mcp",
+    "file": "posts/2026-11-08-week8-langchain-mcp.md"
+  },
+  {
     "title": "第六、七周：读懂最小 RAG 的每一段代码",
     "date": "2026-11-01",
     "tags": [
